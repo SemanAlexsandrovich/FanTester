@@ -51,7 +51,6 @@ void int1_init(void) {
 
 ISR(TIMER1_COMPA_vect) {
 	cli();
-	PORTB ^= (1 << 5);
 	static uint16_t count_to_the_second = 0;
 	count_to_the_second++;
 	if ((count_to_the_second == TIME) && (end_of_time == 0)) {	
