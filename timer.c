@@ -21,20 +21,36 @@ void int0_init(void) {
 
 }
 
+void start_timer1(void) {
+	TCNT1 = 0;
+	end_of_time = 0;
+	TCCR1B |= (1 << CS12) | (1 << CS10); //set prescaler
+	TIMSK1 |= (1 << OCIE1A); //enable interrupt
+}
+
+void stop_timer1(void) {
+	TIMSK1 &= ~(1 << OCIE1A);
+	TCCR1B &= ~((1 << CS12) | (1 << CS10));
+}
+
+void reset_timer1(void) {
+	TCNT1 = 0;
+	end_of_time = 0;
+}
+
 void int1_init(void) {
-  TCCR1A = 0;
-  TCCR1B = 0;
-  TCNT1 = 0;
-  
-  OCR1A = 15624;//1Hz
-  TCCR1B |= (1 << WGM12);
-  TCCR1B |= (1 << CS12) | (1 << CS10);
-  TIMSK1 |= (1 << OCIE1A);
+	TCCR1A = 0;
+	TCCR1B = 0;
+	TCNT1 = 0;
+	OCR1A = 15624;  //1Hz
+	
+	TCCR1B |= (1 << WGM12); // turn on CTC mode
+//	TCCR1B |= (1 << CS12) | (1 << CS10); //set prescaler
+//	TIMSK1 |= (1 << OCIE1A); //enable interrupt
 }
 
 ISR(TIMER1_COMPA_vect) {
 	cli();
-	PORTB ^= (1 << 5);
 	static uint16_t count_to_the_second = 0;
 	count_to_the_second++;
 	if ((count_to_the_second == TIME) && (end_of_time == 0)) {	
@@ -43,4 +59,3 @@ ISR(TIMER1_COMPA_vect) {
 	}
 	sei();
 }
-
